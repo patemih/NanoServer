@@ -42,12 +42,12 @@ Configuração
 #>
 
 
-$WindowsISO = 'C:\NanoServer\10074.0.150424-1350.fbl_impressive_SERVER_OEMRET_X64FRE_EN-US.ISO'
+
+$isoShortFileName = (Get-ChildItem -Filter *.iso)
+$WindowsISO = join-path -path (Resolve-Path  -path '.\') $isoShortFileName.Name
 $VHD_DirName = join-path -path (Resolve-Path  -path '.\') 'NanoServer_vhd' 
 $VHD_FileName = join-path -path (Resolve-Path  -path '.\') 'NanoServer.vhd'
 $DismFolder = join-path -path (Resolve-Path  -path '.\') 'dism'
-
-
 
 Write-Output "-> Montando imagem $WindowsISO"
 $mountResult = Mount-DiskImage -ImagePath $WindowsISO -StorageType ISO -PassThru 
@@ -103,25 +103,3 @@ Write-Output "-> Desmontando ISO $WindowsISO da unidade $mountVolumeDriveLetter"
 Dismount-DiskImage -ImagePath $WindowsISO -StorageType ISO
 
 Write-Output "-> O novo disco está pronto com nome de $newFileName"
-
-<#  
-
-.\Convert-WindowsImage.ps1 -WIM "C:\NanoServer\NanoServer.wim" -VHD "C:\NanoServer\NanoServer.vhd" -VHDFormat VHD -DiskType Dynamic -SizeBytes 5GB -Edition 1
-md mountdir
-dism\dism /Mount-Image /ImageFile:.\NanoServer.vhd /Index:1 /MountDir:.\mountdir
-#REM dism\dism /Add-Package /PackagePath:.\packages\Microsoft-NanoServer-Compute-Package.cab /Image:.\mountdir
-#REM dism\dism /Add-Package /PackagePath:.\packages\en-us\Microsoft-NanoServer-Compute-Package.cab /Image:.\mountdir
-dism\dism /Add-Package /PackagePath:.\packages\Microsoft-NanoServer-Guest-Package.cab /Image:.\mountdir
-dism\dism /Add-Package /PackagePath:.\packages\en-us\Microsoft-NanoServer-Guest-Package.cab /Image:.\mountdir
-dism\dism /Add-Package /PackagePath:.\packages\Microsoft-NanoServer-OEM-Drivers-Package.cab /Image:.\mountdir
-dism\dism /Add-Package /PackagePath:.\packages\en-US\Microsoft-NanoServer-OEM-Drivers-Package.cab /Image:.\mountdir
-dism\dism /Unmount-Image /MountDir:.\MountDir /Commit
-
-dism\dism /Mount-Image /ImageFile:.\NanoServer.vhd /Index:1 /MountDir:.\mountdir
-dism\dism /image:.\mountdir /Apply-Unattend:.\unattend.xml
-md .\mountdir\windows\panther
-copy .\unattend.xml .\mountdir\windows\panther
-dism\dism /Unmount-Image /MountDir:.\mountdir /Commit
-Rename-Item C:\NanoServer\NanoServer.vhd NanoServer_4.vhd
-
-#>
